@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Bilibili Regret Pill",
+  "version": "1.6.2",
+  "description": "恢复在 Bilibili 网站版首页点击'换一换'后被刷掉的上一页视频推荐",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "icons": {
+    "16": "icons/128x128.png",
+    "32": "icons/128x128.png",
+    "48": "icons/128x128.png",
+    "128": "icons/128x128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/128x128.png",
+      "32": "icons/128x128.png",
+      "48": "icons/128x128.png",
+      "128": "icons/128x128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.bilibili.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ]
+}

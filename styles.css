@@ -1,0 +1,158 @@
+/* ============================================================================
+   Bilibili Regret Pill - Styles V1.6.2
+   UI: Adaptive Glassmorphism (True Transparency)
+   ============================================================================ */
+
+.regret-pill-group {
+  /* Layout: Vertical Stack */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  /* Positioning: Below the native button */
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  z-index: 1000;
+  
+  /* Sizing */
+  width: 40px;
+  padding: 8px 0;
+  
+  /* Adaptive Glassmorphism (Neutral) */
+  /* Very low opacity white to let background color through, but maintain glass feel */
+  background-color: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  
+  /* Borders & Shadows */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  
+  /* Animation */
+  transition: all 0.3s ease;
+}
+
+.regret-pill-group:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Slightly more visible on hover */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.regret-pill-btn {
+  /* Base Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  
+  /* Appearance */
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  
+  /* Icon Color */
+  color: #00a1d6;
+  
+  /* Reset */
+  outline: none;
+  padding: 0;
+  
+  /* Transition */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Add margin to top button */
+#regret-pill-undo {
+  margin-bottom: 2px;
+}
+
+/* Button Interaction */
+.regret-pill-btn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.regret-pill-btn:active:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(0.95);
+}
+
+.regret-pill-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+/* Divider */
+.regret-pill-divider {
+  width: 20px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 4px 0;
+}
+
+/* SVG Icons */
+.regret-pill-btn svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* Toast Notification - Glass Style */
+.regret-pill-toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  
+  background: rgba(20, 20, 20, 0.7); /* Darker glass for toast */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 999999;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.regret-pill-toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Dark Mode - Simplified */
+/* No specific background override needed for true glass, just icon colors */
+@media (prefers-color-scheme: dark) {
+  .regret-pill-btn {
+    color: #4ccdfa;
+  }
+  
+  /* Slightly adjust border for visibility on dark backgrounds */
+  .regret-pill-group {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
