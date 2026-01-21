@@ -77,7 +77,7 @@ Bilibili Homepage Regret Pill/
 
 1. 打开浏览器控制台（F12）
 2. 将 `content.js` 中 `CONFIG.DEBUG` 设为 `true`
-3. 在控制台筛选 `[Regret Pill V1.6.2]` 前缀日志
+3. 在控制台筛选 `[Regret Pill V2.0.0]` 前缀日志
 
 ## 许可证
 
