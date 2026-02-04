@@ -6,7 +6,7 @@
 // 2. "Ghost Container" after multiple refreshes (Live Container Finding)
 // ============================================================================
 
-(function() {
+(function () {
   'use strict';
 
   // ========== Configuration ==========
@@ -14,7 +14,7 @@
     INIT_RETRY_DELAY: 300,
     MAX_INIT_ATTEMPTS: 20,
     DEBOUNCE_TIME: 400,
-    MIN_VIDEOS: 4,     
+    MIN_VIDEOS: 4,
     DEBUG: false
   };
 
@@ -23,7 +23,7 @@
     snapshotOld: null,
     snapshotNew: null,
     isViewingOld: false,
-    
+
     isInternalNav: false,
     container: null,
     refreshBtn: null,
@@ -33,7 +33,7 @@
     isListenerBound: false,
     isInitialized: false,
     initAttempts: 0,
-    
+
     cachedBtnSelector: null,
     cachedContainerSelector: null
   };
@@ -82,16 +82,16 @@
 
       const btn = STATE.refreshBtn || this.findRefreshButton();
       const selectors = ['.feed-card', '.bili-video-card__wrap', '.bili-grid', '.recommended-container_floor-aside .container', '.recommended-container .container'];
-      
+
       let videoCards = [];
       for (const sel of selectors) {
         const cards = document.querySelectorAll(sel);
         if (cards.length >= CONFIG.MIN_VIDEOS) {
           videoCards = Array.from(cards);
-          break; 
+          break;
         }
       }
-      
+
       if (videoCards.length === 0) {
         const links = document.querySelectorAll('a[href*="/video/BV"]');
         if (links.length >= CONFIG.MIN_VIDEOS) videoCards = Array.from(links);
@@ -112,7 +112,7 @@
           else if (ancestor.className) STATE.cachedContainerSelector = `.${ancestor.className.split(' ')[0]}`;
           return ancestor;
         }
-        
+
         const style = window.getComputedStyle(ancestor);
         if (style.display === 'grid' || style.display === 'flex') return ancestor;
 
@@ -156,13 +156,21 @@
       }
       return fragment.childElementCount > 0 ? fragment : null;
     },
+    // Helper to upgrade HTTP URLs to HTTPS to avoid Mixed Content warnings
+    upgradeToHttps(url) {
+      if (url && url.startsWith('http://')) {
+        return url.replace('http://', 'https://');
+      }
+      return url;
+    },
     fixImages(node) {
       const images = node.tagName === 'IMG' ? [node] : [];
       images.push(...node.querySelectorAll('img'));
       for (let i = 0; i < images.length; i++) {
         const img = images[i];
-        const src = img.getAttribute('data-src') || img.getAttribute('data-original-src') || img.src;
+        let src = img.getAttribute('data-src') || img.getAttribute('data-original-src') || img.src;
         if (src && !src.startsWith('data:')) {
+          src = this.upgradeToHttps(src);
           img.src = src;
           img.removeAttribute('srcset'); img.removeAttribute('loading');
           img.style.cssText += 'opacity:1;display:block;';
@@ -170,7 +178,9 @@
       }
       const bgElements = node.querySelectorAll('[data-background]');
       for (let i = 0; i < bgElements.length; i++) {
-        bgElements[i].style.backgroundImage = `url(${bgElements[i].getAttribute('data-background')})`;
+        let bgUrl = bgElements[i].getAttribute('data-background');
+        bgUrl = this.upgradeToHttps(bgUrl);
+        bgElements[i].style.backgroundImage = `url(${bgUrl})`;
       }
     },
     isDifferent(fragA, fragB) {
@@ -184,13 +194,13 @@
       if (!container || !snapshotFragment) return;
       const nodesToKeep = new Set();
       const children = Array.from(container.children);
-      
+
       if (STATE.refreshBtn && container.contains(STATE.refreshBtn)) {
         let curr = STATE.refreshBtn;
         while (curr && curr.parentElement !== container) curr = curr.parentElement;
         nodesToKeep.add(curr);
       }
-      
+
       const uiGroup = document.getElementById(STATE.uiContainerId);
       if (uiGroup && container.contains(uiGroup)) {
         let curr = uiGroup;
@@ -206,7 +216,7 @@
       const toRemove = children.filter(c => !nodesToKeep.has(c));
       const cloneFragment = snapshotFragment.cloneNode(true);
       toRemove.forEach(el => el.remove());
-      
+
       const referenceNode = children.find(c => nodesToKeep.has(c)) || null;
       if (referenceNode) container.insertBefore(cloneFragment, referenceNode);
       else container.appendChild(cloneFragment);
@@ -263,7 +273,7 @@
     // [Fix 1] 修复 "点击后无反应/延迟生效"
     handleNativeClick(e) {
       if (STATE.isInternalNav) return;
-      
+
       // 每次点击时，强制重新寻找最新的容器！
       // (这是解决 "多次点击后失效" 的关键，因为容器可能已经被 B 站偷换了)
       const liveContainer = DomUtils.findSafeGridContainer();
@@ -289,7 +299,7 @@
       if (currentContent && currentContent.childElementCount >= CONFIG.MIN_VIDEOS) {
         STATE.snapshotOld = currentContent;
         Logger.log('Snapshot Old captured:', currentContent.childElementCount, 'items');
-        
+
         // 立即刷新按钮状态，修复 "灰色不可点"
         setTimeout(() => UIService.update(), 0);
       }
@@ -298,7 +308,7 @@
     bindNativeListener() {
       if (!STATE.refreshBtn) return;
       if (this._boundClickHandler) STATE.refreshBtn.removeEventListener('click', this._boundClickHandler, true);
-      
+
       this._boundClickHandler = this.handleNativeClick.bind(this);
       STATE.refreshBtn.addEventListener('click', this._boundClickHandler, true);
       STATE.isListenerBound = true;
@@ -318,7 +328,7 @@
       if (STATE.debounceTimer) clearTimeout(STATE.debounceTimer);
       STATE.debounceTimer = setTimeout(() => {
         if (STATE.isInternalNav) return;
-        
+
         // Observer 触发时，也重新确认容器
         const liveContainer = DomUtils.findSafeGridContainer();
         if (!liveContainer) return;
@@ -382,7 +392,7 @@
   // ========== Initialization (V2.0.0 Original Logic) ==========
   function runDiscovery() {
     STATE.initAttempts++;
-    
+
     // 1. Find Button
     if (!DomUtils.isValidElement(STATE.refreshBtn)) {
       STATE.refreshBtn = DomUtils.findRefreshButton();
